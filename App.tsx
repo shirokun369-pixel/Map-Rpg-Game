@@ -40,6 +40,7 @@ const App: React.FC = () => {
   const [renamingSceneId, setRenamingSceneId] = useState<string | null>(null);
   const [sceneToDelete, setSceneToDelete] = useState<string | null>(null);
   const [blockToDelete, setBlockToDelete] = useState<string | null>(null);
+  const [tokenToDeleteIdx, setTokenToDeleteIdx] = useState<number | null>(null);
   const [portalMenu, setPortalMenu] = useState<{ x: number, y: number, row: number, col: number } | null>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
@@ -327,6 +328,18 @@ const App: React.FC = () => {
     setBlockToDelete(null);
   };
 
+  const startDeleteLibraryToken = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setTokenToDeleteIdx(idx);
+  };
+
+  const executeDeleteLibraryToken = () => {
+    if (tokenToDeleteIdx === null) return;
+    setTokenLibrary(prev => prev.filter((_, i) => i !== tokenToDeleteIdx));
+    if (selectedLibraryToken === tokenToDeleteIdx) setSelectedLibraryToken(null);
+    setTokenToDeleteIdx(null);
+  };
+
   return (
     <div className="flex h-screen w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans select-none">
       
@@ -383,6 +396,20 @@ const App: React.FC = () => {
             <div className="flex flex-col gap-3 mt-8">
               <button onClick={executeDeleteCustomBlock} className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95">Apagar Bloco</button>
               <button onClick={() => setBlockToDelete(null)} className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl transition-all active:scale-95">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tokenToDeleteIdx !== null && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6"><AlertIcon /></div>
+            <h3 className="text-xl font-bold text-center mb-2">Excluir Personagem?</h3>
+            <p className="text-zinc-500 text-center text-xs px-4">Esta ação removerá o personagem da biblioteca permanentemente.</p>
+            <div className="flex flex-col gap-3 mt-8">
+              <button onClick={executeDeleteLibraryToken} className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95">Remover Personagem</button>
+              <button onClick={() => setTokenToDeleteIdx(null)} className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl transition-all active:scale-95">Cancelar</button>
             </div>
           </div>
         </div>
@@ -470,9 +497,10 @@ const App: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
                   {tokenLibrary.map((token, idx) => (
-                    <button key={idx} onClick={() => { setSelectedLibraryToken(idx); setActiveTool(Tool.TOKEN); setSelectedCustomBlockId(null); }} className={`p-2 rounded-xl border-2 transition-all ${selectedLibraryToken === idx ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
+                    <button key={idx} onClick={() => { setSelectedLibraryToken(idx); setActiveTool(Tool.TOKEN); setSelectedCustomBlockId(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedLibraryToken === idx ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
                       <img src={token.image} className="w-10 h-10 object-cover rounded-full mx-auto" />
                       <div className="text-[8px] mt-1 truncate font-bold">{token.name}</div>
+                      <div onClick={(e) => startDeleteLibraryToken(idx, e)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"><TrashIcon /></div>
                     </button>
                   ))}
               </div>
