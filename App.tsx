@@ -17,7 +17,6 @@ const LinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height
 const ImageIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
 const EyeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
 const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>;
-const ColorSwatchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
 
 const createEmptyGrid = () => Array.from({ length: GRID_HEIGHT }, () => 
   Array.from({ length: GRID_WIDTH }, () => ({ type: TileType.EMPTY }))
@@ -227,16 +226,33 @@ const App: React.FC = () => {
     }
   };
 
-  const floodFill = useCallback((startRow: number, startCol: number, targetType: TileType, replacementType: TileType, customId?: string) => {
-    if (targetType === replacementType && (!customId || activeScene.grid[startRow][startCol].customBlockId === customId)) return;
-    const newGrid = [...activeScene.grid.map(row => [...row])];
+  const floodFill = useCallback((startRow: number, startCol: number, replacementType: TileType, replacementCustomId?: string) => {
+    const startTile = activeScene.grid[startRow][startCol];
+    const targetType = startTile.type;
+    const targetCustomId = startTile.customBlockId;
+
+    // Segurança: Se você tentar pintar com exatamente o mesmo tipo e ID de bloco, não faça nada (evita loop infinito)
+    if (targetType === replacementType && targetCustomId === replacementCustomId) return;
+
+    const newGrid = activeScene.grid.map(row => [...row]);
     const stack: [number, number][] = [[startRow, startCol]];
+
     while (stack.length > 0) {
       const [r, c] = stack.pop()!;
-      if (r < 0 || r >= GRID_HEIGHT || c < 0 || c >= GRID_WIDTH || newGrid[r][c].type !== targetType) continue;
-      newGrid[r][c] = { ...newGrid[r][c], type: replacementType, customBlockId: customId };
-      stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]);
+      
+      if (r < 0 || r >= GRID_HEIGHT || c < 0 || c >= GRID_WIDTH) continue;
+      
+      const currentTile = newGrid[r][c];
+
+      // Só substitui se o tile atual for IGUAL ao alvo inicial (mesmo tipo e mesmo ID de custom)
+      if (currentTile.type === targetType && currentTile.customBlockId === targetCustomId) {
+        newGrid[r][c] = { ...currentTile, type: replacementType, customBlockId: replacementCustomId };
+        
+        // Adiciona vizinhos
+        stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]);
+      }
     }
+
     updateActiveScene({ grid: newGrid });
   }, [activeScene.grid, updateActiveScene]);
 
@@ -279,9 +295,9 @@ const App: React.FC = () => {
     } else if (activeTool === Tool.FILL) {
       if (!isInitialClick) return;
       if (selectedCustomBlockId) {
-        floodFill(row, col, tile.type, TileType.CUSTOM, selectedCustomBlockId);
+        floodFill(row, col, TileType.CUSTOM, selectedCustomBlockId);
       } else {
-        floodFill(row, col, tile.type, selectedTile);
+        floodFill(row, col, selectedTile);
       }
     } else if (activeTool === Tool.ERASER) {
       if (tile.type === TileType.EMPTY && !activeScene.tokens.find(t => t.x === col && t.y === row)) return;
