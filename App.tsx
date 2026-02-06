@@ -17,6 +17,7 @@ const LinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height
 const ImageIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
 const EyeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
 const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>;
+const ColorSwatchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
 
 const createEmptyGrid = () => Array.from({ length: GRID_HEIGHT }, () => 
   Array.from({ length: GRID_WIDTH }, () => ({ type: TileType.EMPTY }))
@@ -63,6 +64,7 @@ const App: React.FC = () => {
   });
   const [selectedCustomBlockId, setSelectedCustomBlockId] = useState<string | null>(null);
   const [newBlockName, setNewBlockName] = useState('');
+  const [newBlockColor, setNewBlockColor] = useState('#10b981'); // Emerald 500
   const blockFileInputRef = useRef<HTMLInputElement>(null);
   const bgFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -201,6 +203,16 @@ const App: React.FC = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAddColorBlock = () => {
+    const newBlock: CustomBlock = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: newBlockName || `Cor ${newBlockColor}`,
+      color: newBlockColor
+    };
+    setCustomBlocks(prev => [...prev, newBlock]);
+    setNewBlockName('');
   };
 
   const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -428,7 +440,7 @@ const App: React.FC = () => {
         <aside className="w-80 bg-zinc-900 border-r border-zinc-800 flex flex-col h-full shadow-2xl z-20 overflow-hidden animate-in slide-in-from-left duration-300">
           <div className="p-5 border-b border-zinc-800 flex justify-between items-center">
             <h1 className="text-2xl font-black tracking-tighter text-white"><span className="text-emerald-500">RPG</span>MAP</h1>
-            <div className="text-[10px] bg-zinc-800 px-2 py-1 rounded font-bold text-zinc-400 uppercase">v1.4</div>
+            <div className="text-[10px] bg-zinc-800 px-2 py-1 rounded font-bold text-zinc-400 uppercase">v1.5</div>
           </div>
 
           <div className="p-4 flex flex-col gap-6 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-zinc-700">
@@ -473,16 +485,35 @@ const App: React.FC = () => {
 
             <section className="bg-zinc-950/60 p-4 rounded-2xl border border-zinc-800">
               <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Blocos Custom</h2>
-              <div className="flex gap-2 mb-4">
-                  <input type="text" value={newBlockName} onChange={(e) => setNewBlockName(e.target.value)} placeholder="Nome" className="flex-1 bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-emerald-500 outline-none" />
-                  <button onClick={() => blockFileInputRef.current?.click()} className="p-2.5 bg-zinc-700 hover:bg-emerald-600 rounded-lg transition-colors"><PlusIcon /></button>
+              <div className="flex flex-col gap-3 mb-4">
+                  <input type="text" value={newBlockName} onChange={(e) => setNewBlockName(e.target.value)} placeholder="Nome do Bloco" className="w-full bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-emerald-500 outline-none" />
+                  <div className="flex gap-2">
+                    <div className="flex-1 flex gap-2">
+                      <button onClick={() => blockFileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 py-2 bg-zinc-800 hover:bg-emerald-600/20 text-[10px] font-bold uppercase rounded-lg border border-zinc-700 transition-all" title="Adicionar Imagem">
+                        <ImageIcon /> Imagem
+                      </button>
+                      <div className="flex items-center gap-2 px-2 bg-zinc-800 border border-zinc-700 rounded-lg">
+                        <input type="color" value={newBlockColor} onChange={(e) => setNewBlockColor(e.target.value)} className="w-6 h-6 bg-transparent border-none cursor-pointer p-0" title="Escolher Cor" />
+                        <button onClick={handleAddColorBlock} className="p-1 hover:text-emerald-500 transition-colors">
+                          <PlusIcon />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   <input ref={blockFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleBlockUpload} />
               </div>
-              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
                   {customBlocks.map(block => (
                     <button key={block.id} onClick={() => { setSelectedCustomBlockId(block.id); setActiveTool(Tool.PENCIL); setSelectedLibraryToken(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedCustomBlockId === block.id ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
-                      <img src={block.image} className="w-10 h-10 object-cover rounded mx-auto" />
-                      <div onClick={(e) => startDeleteCustomBlock(block.id, e)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><TrashIcon /></div>
+                      <div className="w-10 h-10 rounded mx-auto overflow-hidden flex items-center justify-center bg-zinc-950">
+                        {block.image ? (
+                          <img src={block.image} className="w-full h-full object-cover" alt={block.name} />
+                        ) : (
+                          <div style={{ backgroundColor: block.color }} className="w-full h-full" />
+                        )}
+                      </div>
+                      <div className="text-[8px] mt-1 truncate font-bold opacity-60">{block.name}</div>
+                      <div onClick={(e) => startDeleteCustomBlock(block.id, e)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"><TrashIcon /></div>
                     </button>
                   ))}
               </div>
@@ -498,7 +529,7 @@ const App: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
                   {tokenLibrary.map((token, idx) => (
                     <button key={idx} onClick={() => { setSelectedLibraryToken(idx); setActiveTool(Tool.TOKEN); setSelectedCustomBlockId(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedLibraryToken === idx ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
-                      <img src={token.image} className="w-10 h-10 object-cover rounded-full mx-auto" />
+                      <img src={token.image} className="w-10 h-10 object-cover rounded-full mx-auto" alt={token.name} />
                       <div className="text-[8px] mt-1 truncate font-bold">{token.name}</div>
                       <div onClick={(e) => startDeleteLibraryToken(idx, e)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"><TrashIcon /></div>
                     </button>
@@ -540,7 +571,7 @@ const App: React.FC = () => {
         >
           {activeScene.backgroundImage && (
             <div className="absolute inset-0 z-0">
-              <img src={activeScene.backgroundImage} className="w-full h-full object-cover opacity-80" />
+              <img src={activeScene.backgroundImage} className="w-full h-full object-cover opacity-80" alt="Background" />
             </div>
           )}
           <div 
@@ -570,7 +601,15 @@ const App: React.FC = () => {
                     borderBottom: showGrid ? '1px solid rgba(255,255,255,0.12)' : 'none'
                   }}
                 >
-                  {customBlock && !tokenAtTile && <img src={customBlock.image} className="w-full h-full object-cover" />}
+                  {customBlock && !tokenAtTile && (
+                    <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                      {customBlock.image ? (
+                        <img src={customBlock.image} className="w-full h-full object-cover" alt={customBlock.name} />
+                      ) : (
+                        <div style={{ backgroundColor: customBlock.color }} className="w-full h-full" />
+                      )}
+                    </div>
+                  )}
                   
                   {/* Ícones indicadores: Só mostramos se a grade estiver ATIVA */}
                   {showGrid && TILE_CONFIG[tile.type].icon !== '·' && !tokenAtTile && !customBlock && (
@@ -586,7 +625,7 @@ const App: React.FC = () => {
                   {tokenAtTile && (
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center group pointer-events-none">
                       <div className="w-8 h-8 rounded-full border-2 border-white shadow-xl overflow-hidden pointer-events-auto transform transition-transform group-hover:scale-125">
-                        <img src={tokenAtTile.image} className="w-full h-full object-cover" />
+                        <img src={tokenAtTile.image} className="w-full h-full object-cover" alt={tokenAtTile.name} />
                       </div>
                       <div className="absolute -top-10 bg-zinc-950 border border-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-2xl z-[100] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap uppercase tracking-widest pointer-events-none">
                         {tokenAtTile.name}

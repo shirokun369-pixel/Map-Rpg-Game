@@ -40,7 +40,8 @@ export interface Token {
 export interface CustomBlock {
   id: string;
   name: string;
-  image: string;
+  image?: string;
+  color?: string; // Cor sólida em hex
 }
 
 export interface MapScene {
