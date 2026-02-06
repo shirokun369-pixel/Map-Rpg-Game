@@ -63,7 +63,7 @@ const App: React.FC = () => {
   });
   const [selectedCustomBlockId, setSelectedCustomBlockId] = useState<string | null>(null);
   const [newBlockName, setNewBlockName] = useState('');
-  const [newBlockColor, setNewBlockColor] = useState('#10b981'); // Emerald 500
+  const [newBlockColor, setNewBlockColor] = useState('#8b5cf6'); // Violet 500
   const blockFileInputRef = useRef<HTMLInputElement>(null);
   const bgFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -231,7 +231,6 @@ const App: React.FC = () => {
     const targetType = startTile.type;
     const targetCustomId = startTile.customBlockId;
 
-    // Segurança: Se você tentar pintar com exatamente o mesmo tipo e ID de bloco, não faça nada (evita loop infinito)
     if (targetType === replacementType && targetCustomId === replacementCustomId) return;
 
     const newGrid = activeScene.grid.map(row => [...row]);
@@ -244,11 +243,8 @@ const App: React.FC = () => {
       
       const currentTile = newGrid[r][c];
 
-      // Só substitui se o tile atual for IGUAL ao alvo inicial (mesmo tipo e mesmo ID de custom)
       if (currentTile.type === targetType && currentTile.customBlockId === targetCustomId) {
         newGrid[r][c] = { ...currentTile, type: replacementType, customBlockId: replacementCustomId };
-        
-        // Adiciona vizinhos
         stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]);
       }
     }
@@ -374,7 +370,7 @@ const App: React.FC = () => {
       {/* Zen Toggle Button */}
       <button 
         onClick={() => setIsZenMode(!isZenMode)}
-        className="fixed bottom-6 right-6 z-[250] w-12 h-12 bg-emerald-600 hover:bg-emerald-500 rounded-full shadow-2xl flex items-center justify-center transition-all active:scale-90 border border-emerald-400/30"
+        className="fixed bottom-6 right-6 z-[250] w-12 h-12 bg-purple-600 hover:bg-purple-500 rounded-full shadow-2xl flex items-center justify-center transition-all active:scale-90 border border-purple-400/30"
         title={isZenMode ? "Mostrar Interface" : "Modo Zen"}
       >
         {isZenMode ? <EyeIcon /> : <EyeOffIcon />}
@@ -392,7 +388,7 @@ const App: React.FC = () => {
           </div>
           <div className="space-y-1 max-h-64 overflow-y-auto">
             {scenes.filter(s => s.id !== activeSceneId).map(scene => (
-              <button key={scene.id} onClick={() => linkPortal(scene.id)} className="w-full text-left px-3 py-2 text-xs font-bold hover:bg-emerald-600 hover:text-white rounded-lg transition-colors flex items-center justify-between group">
+              <button key={scene.id} onClick={() => linkPortal(scene.id)} className="w-full text-left px-3 py-2 text-xs font-bold hover:bg-purple-600 hover:text-white rounded-lg transition-colors flex items-center justify-between group">
                 <span>{scene.name}</span>
                 <span className="opacity-0 group-hover:opacity-100 text-[9px] bg-white/20 px-1.5 py-0.5 rounded uppercase">Vincular</span>
               </button>
@@ -445,9 +441,9 @@ const App: React.FC = () => {
 
       {movingToken && (
         <div className="fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-1/2" style={{ left: mousePos.x, top: mousePos.y }}>
-          <div className="w-12 h-12 rounded-full border-2 border-emerald-400 shadow-2xl overflow-hidden ring-4 ring-zinc-950/80 scale-125 opacity-90 flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full border-2 border-purple-400 shadow-2xl overflow-hidden ring-4 ring-zinc-950/80 scale-125 opacity-90 flex flex-col items-center">
             <img src={movingToken.image} alt={movingToken.name} className="w-full h-full object-cover" />
-            <div className="absolute -bottom-6 bg-zinc-900 text-white text-[10px] px-2 py-0.5 rounded border border-emerald-500 whitespace-nowrap shadow-xl font-bold uppercase">{movingToken.name}</div>
+            <div className="absolute -bottom-6 bg-zinc-900 text-white text-[10px] px-2 py-0.5 rounded border border-purple-500 whitespace-nowrap shadow-xl font-bold uppercase">{movingToken.name}</div>
           </div>
         </div>
       )}
@@ -455,7 +451,7 @@ const App: React.FC = () => {
       {!isZenMode && (
         <aside className="w-80 bg-zinc-900 border-r border-zinc-800 flex flex-col h-full shadow-2xl z-20 overflow-hidden animate-in slide-in-from-left duration-300">
           <div className="p-5 border-b border-zinc-800 flex justify-between items-center">
-            <h1 className="text-2xl font-black tracking-tighter text-white"><span className="text-emerald-500">RPG</span>MAP</h1>
+            <h1 className="text-2xl font-black tracking-tighter text-white"><span className="text-purple-500">RPG</span>MAP</h1>
             <div className="text-[10px] bg-zinc-800 px-2 py-1 rounded font-bold text-zinc-400 uppercase">v1.5</div>
           </div>
 
@@ -463,11 +459,11 @@ const App: React.FC = () => {
             <section>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Cenas</h2>
-                <button onClick={addNewScene} className="p-1.5 bg-zinc-800 hover:bg-emerald-600 rounded-lg transition-all text-zinc-400 hover:text-white"><PlusIcon /></button>
+                <button onClick={addNewScene} className="p-1.5 bg-zinc-800 hover:bg-purple-600 rounded-lg transition-all text-zinc-400 hover:text-white"><PlusIcon /></button>
               </div>
               <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
                 {scenes.map((scene, idx) => (
-                  <div key={scene.id} onClick={() => setActiveSceneId(scene.id)} className={`group flex items-center justify-between gap-2 p-2.5 rounded-xl cursor-pointer transition-all ${activeSceneId === scene.id ? 'bg-emerald-600 text-white' : 'bg-zinc-800/50 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200'}`}>
+                  <div key={scene.id} onClick={() => setActiveSceneId(scene.id)} className={`group flex items-center justify-between gap-2 p-2.5 rounded-xl cursor-pointer transition-all ${activeSceneId === scene.id ? 'bg-purple-600 text-white' : 'bg-zinc-800/50 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200'}`}>
                     {renamingSceneId === scene.id ? (
                       <input ref={renameInputRef} type="text" defaultValue={scene.name} onBlur={(e) => handleRenameSave(scene.id, e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleRenameSave(scene.id, e.currentTarget.value); if (e.key === 'Escape') setRenamingSceneId(null); }} className="text-xs font-bold bg-white/20 text-white rounded px-1.5 py-0.5 outline-none flex-1 min-w-0" onClick={(e) => e.stopPropagation()} />
                     ) : (
@@ -492,25 +488,25 @@ const App: React.FC = () => {
             <section>
               <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Ferramentas</h2>
               <div className="grid grid-cols-4 gap-2">
-                <button onClick={() => setActiveTool(Tool.PENCIL)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.PENCIL ? 'bg-emerald-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><PencilIcon /><span className="text-[9px] font-bold">Lápis</span></button>
-                <button onClick={() => setActiveTool(Tool.ERASER)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.ERASER ? 'bg-emerald-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><EraserIcon /><span className="text-[9px] font-bold">Apagar</span></button>
-                <button onClick={() => setActiveTool(Tool.FILL)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.FILL ? 'bg-emerald-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><FillIcon /><span className="text-[9px] font-bold">Balde</span></button>
-                <button onClick={() => setActiveTool(Tool.TOKEN)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.TOKEN ? 'bg-emerald-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><UserIcon /><span className="text-[9px] font-bold">Token</span></button>
+                <button onClick={() => setActiveTool(Tool.PENCIL)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.PENCIL ? 'bg-purple-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><PencilIcon /><span className="text-[9px] font-bold">Lápis</span></button>
+                <button onClick={() => setActiveTool(Tool.ERASER)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.ERASER ? 'bg-purple-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><EraserIcon /><span className="text-[9px] font-bold">Apagar</span></button>
+                <button onClick={() => setActiveTool(Tool.FILL)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.FILL ? 'bg-purple-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><FillIcon /><span className="text-[9px] font-bold">Balde</span></button>
+                <button onClick={() => setActiveTool(Tool.TOKEN)} className={`p-2.5 rounded-xl flex flex-col items-center gap-1.5 transition-all ${activeTool === Tool.TOKEN ? 'bg-purple-600 shadow-lg text-white' : 'bg-zinc-800 text-zinc-400'}`}><UserIcon /><span className="text-[9px] font-bold">Token</span></button>
               </div>
             </section>
 
             <section className="bg-zinc-950/60 p-4 rounded-2xl border border-zinc-800">
               <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Blocos Custom</h2>
               <div className="flex flex-col gap-3 mb-4">
-                  <input type="text" value={newBlockName} onChange={(e) => setNewBlockName(e.target.value)} placeholder="Nome do Bloco" className="w-full bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-emerald-500 outline-none" />
+                  <input type="text" value={newBlockName} onChange={(e) => setNewBlockName(e.target.value)} placeholder="Nome do Bloco" className="w-full bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-purple-500 outline-none" />
                   <div className="flex gap-2">
                     <div className="flex-1 flex gap-2">
-                      <button onClick={() => blockFileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 py-2 bg-zinc-800 hover:bg-emerald-600/20 text-[10px] font-bold uppercase rounded-lg border border-zinc-700 transition-all" title="Adicionar Imagem">
+                      <button onClick={() => blockFileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 py-2 bg-zinc-800 hover:bg-purple-600/20 text-[10px] font-bold uppercase rounded-lg border border-zinc-700 transition-all" title="Adicionar Imagem">
                         <ImageIcon /> Imagem
                       </button>
                       <div className="flex items-center gap-2 px-2 bg-zinc-800 border border-zinc-700 rounded-lg">
                         <input type="color" value={newBlockColor} onChange={(e) => setNewBlockColor(e.target.value)} className="w-6 h-6 bg-transparent border-none cursor-pointer p-0" title="Escolher Cor" />
-                        <button onClick={handleAddColorBlock} className="p-1 hover:text-emerald-500 transition-colors">
+                        <button onClick={handleAddColorBlock} className="p-1 hover:text-purple-500 transition-colors">
                           <PlusIcon />
                         </button>
                       </div>
@@ -520,7 +516,7 @@ const App: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
                   {customBlocks.map(block => (
-                    <button key={block.id} onClick={() => { setSelectedCustomBlockId(block.id); setActiveTool(Tool.PENCIL); setSelectedLibraryToken(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedCustomBlockId === block.id ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
+                    <button key={block.id} onClick={() => { setSelectedCustomBlockId(block.id); setActiveTool(Tool.PENCIL); setSelectedLibraryToken(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedCustomBlockId === block.id ? 'border-purple-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
                       <div className="w-10 h-10 rounded mx-auto overflow-hidden flex items-center justify-center bg-zinc-950">
                         {block.image ? (
                           <img src={block.image} className="w-full h-full object-cover" alt={block.name} />
@@ -538,13 +534,13 @@ const App: React.FC = () => {
             <section className="bg-zinc-950/60 p-4 rounded-2xl border border-zinc-800">
               <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Personagens</h2>
               <div className="flex gap-2 mb-4">
-                  <input type="text" value={newTokenName} onChange={(e) => setNewTokenName(e.target.value)} placeholder="Nome" className="flex-1 bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-emerald-500 outline-none" />
-                  <button onClick={() => fileInputRef.current?.click()} className="p-2.5 bg-zinc-700 hover:bg-emerald-600 rounded-lg transition-colors"><PlusIcon /></button>
+                  <input type="text" value={newTokenName} onChange={(e) => setNewTokenName(e.target.value)} placeholder="Nome" className="flex-1 bg-zinc-800 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:border-purple-500 outline-none" />
+                  <button onClick={() => fileInputRef.current?.click()} className="p-2.5 bg-zinc-700 hover:bg-purple-600 rounded-lg transition-colors"><PlusIcon /></button>
                   <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
               </div>
               <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
                   {tokenLibrary.map((token, idx) => (
-                    <button key={idx} onClick={() => { setSelectedLibraryToken(idx); setActiveTool(Tool.TOKEN); setSelectedCustomBlockId(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedLibraryToken === idx ? 'border-emerald-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
+                    <button key={idx} onClick={() => { setSelectedLibraryToken(idx); setActiveTool(Tool.TOKEN); setSelectedCustomBlockId(null); }} className={`relative group p-2 rounded-xl border-2 transition-all ${selectedLibraryToken === idx ? 'border-purple-500 bg-zinc-800' : 'border-zinc-800 bg-zinc-900/40'}`}>
                       <img src={token.image} className="w-10 h-10 object-cover rounded-full mx-auto" alt={token.name} />
                       <div className="text-[8px] mt-1 truncate font-bold">{token.name}</div>
                       <div onClick={(e) => startDeleteLibraryToken(idx, e)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"><TrashIcon /></div>
@@ -554,7 +550,7 @@ const App: React.FC = () => {
             </section>
 
             <section className="mt-auto pt-4 flex flex-col gap-2 pb-12">
-              <button onClick={() => setShowGrid(!showGrid)} className={`w-full py-2 text-[10px] font-bold rounded-lg uppercase tracking-widest border transition-colors ${showGrid ? 'bg-zinc-800 border-zinc-700' : 'bg-emerald-600/20 border-emerald-600 text-emerald-400'}`}>Grade: {showGrid ? "Ativada" : "Desativada"}</button>
+              <button onClick={() => setShowGrid(!showGrid)} className={`w-full py-2 text-[10px] font-bold rounded-lg uppercase tracking-widest border transition-colors ${showGrid ? 'bg-zinc-800 border-zinc-700' : 'bg-purple-600/20 border-purple-600 text-purple-400'}`}>Grade: {showGrid ? "Ativada" : "Desativada"}</button>
             </section>
           </div>
         </aside>
@@ -566,7 +562,7 @@ const App: React.FC = () => {
       >
         {!isZenMode && (
           <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-zinc-900/80 backdrop-blur-md px-6 py-3 rounded-full border border-zinc-800 text-[11px] font-black text-zinc-300 uppercase tracking-[0.1em] flex items-center gap-6 shadow-2xl animate-in fade-in slide-in-from-top duration-500">
-            <span className="flex items-center gap-2"><span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /> Zoom: {Math.round(zoomLevel * 100)}%</span>
+            <span className="flex items-center gap-2"><span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" /> Zoom: {Math.round(zoomLevel * 100)}%</span>
             <span className="text-zinc-700 font-normal">|</span>
             <span className="text-zinc-500">Ctrl + Scroll para aproximar</span>
           </div>
@@ -634,7 +630,7 @@ const App: React.FC = () => {
                   
                   {hasLink && !tokenAtTile && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                       <div className="bg-emerald-500/40 w-2.5 h-2.5 rounded-full animate-pulse ring-4 ring-emerald-500/10" />
+                       <div className="bg-purple-500/40 w-2.5 h-2.5 rounded-full animate-pulse ring-4 ring-purple-500/10" />
                     </div>
                   )}
 
@@ -643,12 +639,12 @@ const App: React.FC = () => {
                       <div className="w-8 h-8 rounded-full border-2 border-white shadow-xl overflow-hidden pointer-events-auto transform transition-transform group-hover:scale-125">
                         <img src={tokenAtTile.image} className="w-full h-full object-cover" alt={tokenAtTile.name} />
                       </div>
-                      <div className="absolute -top-10 bg-zinc-950 border border-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-2xl z-[100] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap uppercase tracking-widest pointer-events-none">
+                      <div className="absolute -top-10 bg-zinc-950 border border-purple-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-2xl z-[100] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap uppercase tracking-widest pointer-events-none">
                         {tokenAtTile.name}
                       </div>
                     </div>
                   )}
-                  {movingToken && !tokenAtTile && activeTool === Tool.TOKEN && <div className="absolute inset-0 bg-emerald-500/20 animate-pulse border border-emerald-500/30" />}
+                  {movingToken && !tokenAtTile && activeTool === Tool.TOKEN && <div className="absolute inset-0 bg-purple-500/20 animate-pulse border border-purple-500/30" />}
                 </div>
               );
             }))}
